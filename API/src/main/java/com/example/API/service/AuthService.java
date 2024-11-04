@@ -16,6 +16,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,8 +31,10 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthService {
     UserRepository userRepository;
+
     @NonFinal
-    protected static final String SIGNER_KEY =
+    @Value("${jwt.signerKey}")
+    protected String SIGNER_KEY =
             "i79vwtl1y14gnrzivwklqemp7u82k02m";
 
     public IntrospectResponse introspect(IntrospectRequest request)
