@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -24,12 +24,12 @@ public class UserController {
         return apiResponse;
     }
 
-    @PutMapping("/userId")
+    @PutMapping("/{userId}")
     User updateUser(@PathVariable Long userId, @RequestBody UserUpdateRequest request){
         return userService.updateUser(userId, request);
     }
 
-    @DeleteMapping("/userId")
+    @DeleteMapping("/{userId}")
     String deleteUser(@PathVariable Long userId){
         userService.deleteUser(userId);
         return "user has been delete";
