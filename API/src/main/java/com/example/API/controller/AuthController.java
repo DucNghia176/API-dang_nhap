@@ -1,7 +1,7 @@
 package com.example.API.controller;
 
 import com.example.API.dto.request.AuthRequest;
-import com.example.API.service.UserService;
+import com.example.API.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthController {
     @Autowired
-    private UserService userService;
+    private AuthService userService;
     private String token = null;
 
     @PostMapping("/login")
