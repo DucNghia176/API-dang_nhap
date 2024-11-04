@@ -7,6 +7,8 @@ import com.example.API.exception.AppException;
 import com.example.API.exception.ErrorCode;
 import com.example.API.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,6 +29,8 @@ public class UserService {
         user.setEmail(request.getEmail());
         user.setDob(request.getDob());
 
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         return userRepository.save(user);
     }
 

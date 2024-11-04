@@ -1,6 +1,5 @@
-package com.example.API.dto.request;
+package com.example.API.dto.response;
 
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,7 +8,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AuthRequest {
-    String username;
-    String password;
+public class AuthResponse {
+    boolean authenticated;
 }

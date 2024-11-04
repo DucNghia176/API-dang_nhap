@@ -2,7 +2,8 @@ package com.example.API.exception;
 
 public enum ErrorCode {
     UNCATEGORIZED(404, "Uncategorized error"),
-    USER_EXISTED(401, "User existed")
+    USER_EXISTED(200, "User existed"),
+    USER_NOT_EXISTED(402, "User not exited")
     ;
 
     ErrorCode(int code, String message) {

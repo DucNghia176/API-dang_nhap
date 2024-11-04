@@ -2,9 +2,16 @@ package com.example.API.service;
 
 import com.example.API.dto.request.AuthRequest;
 import com.example.API.entity.User;
+import com.example.API.exception.AppException;
+import com.example.API.exception.ErrorCode;
 import com.example.API.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -12,62 +19,16 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthService {
-    @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository;
 
-    private final Map<String, Boolean> userLoginStatus = new HashMap<>();
+    public boolean authenticate(AuthRequest request){
+        var user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-    // Hàm đăng ký người dùng
-    @Transactional
-    public User registerUser(AuthRequest authRequest) {
-        String username = authRequest.getUsername();
-
-        // Kiểm tra người dùng đã tồn tại
-        if (userRepository.findByUsername(username).isPresent()) {
-            throw new RuntimeException("User already exists: " + username);
-        }
-
-        User user = new User();
-        user.setUsername(authRequest.getUsername());
-        user.setPassword(authRequest.getPassword());
-
-        return userRepository.save(user);
-    }
-
-    // Hàm tìm kiếm người dùng
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
-
-    // Hàm xác thực người dùng
-    public boolean validateUser(String username, String password) {
-        Optional<User> userOpt = findByUsername(username);
-        if (userOpt.isEmpty()) {
-            throw new RuntimeException("User not found: " + username);
-        }
-        return userOpt.get().getPassword().equals(password);
-    }
-
-    // Hàm tạo token cho người dùng
-    public String createToken(String username) {
-        return "token-" + username; // Giả lập token
-    }
-
-    // Hàm xử lý đăng nhập
-    public String loginUser(String username, String password) {
-        if (validateUser(username, password)) {
-            userLoginStatus.put(username, true); // Đánh dấu người dùng là đã đăng nhập
-            return createToken(username);
-        }
-        throw new RuntimeException("Unauthorized");
-    }
-
-    // Hàm xử lý đăng xuất
-    public void logoutUser(String username) {
-        if (!userLoginStatus.getOrDefault(username, false)) {
-            throw new RuntimeException("User not logged in: " + username);
-        }
-        userLoginStatus.put(username, false); // Đánh dấu người dùng là đã đăng xuất
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        return passwordEncoder.matches(request.getPassword(), user.getPassword());
     }
 }
