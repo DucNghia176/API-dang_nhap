@@ -3,6 +3,7 @@ package com.example.API.controller;
 import com.example.API.dto.request.ApiResponse;
 import com.example.API.dto.request.AuthRequest;
 import com.example.API.dto.request.IntrospectRequest;
+import com.example.API.dto.request.LogoutRequest;
 import com.example.API.dto.response.AuthResponse;
 import com.example.API.dto.response.IntrospectResponse;
 import com.example.API.service.AuthService;
@@ -36,6 +37,14 @@ public class AuthController {
         var result = authServiced.introspect(request);
         return ApiResponse.<IntrospectResponse>builder()
                 .result(result)
+                .build();
+    }
+
+    @PostMapping("/logout")
+    ApiResponse<String> logout(@RequestBody LogoutRequest request) {
+        authServiced.logout(request.getToken());
+        return ApiResponse.<String>builder()
+                .result("Logout successful")
                 .build();
     }
 }

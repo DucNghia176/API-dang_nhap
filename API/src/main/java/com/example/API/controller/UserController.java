@@ -3,7 +3,7 @@ package com.example.API.controller;
 import com.example.API.dto.request.ApiResponse;
 import com.example.API.dto.request.UserCreateRequest;
 import com.example.API.dto.request.UserUpdateRequest;
-import com.example.API.entity.User;
+import com.example.API.dto.response.UserResponse; // Import UserResponse
 import com.example.API.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +16,8 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    ApiResponse<User> createUser(@RequestBody @Valid UserCreateRequest request){
-        ApiResponse<User> apiResponse = new ApiResponse<>();
+    public ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreateRequest request) {
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
 
         apiResponse.setResult(userService.createUser(request));
 
@@ -25,14 +25,13 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    User updateUser(@PathVariable Long userId, @RequestBody UserUpdateRequest request){
-        return userService.updateUser(userId, request);
+    public UserResponse updateUser(@PathVariable Long userId, @RequestBody UserUpdateRequest request) {
+        return userService.updateUser(userId, request); // Cập nhật kiểu trả về
     }
 
     @DeleteMapping("/{userId}")
-    String deleteUser(@PathVariable Long userId){
+    public String deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
-        return "user has been delete";
+        return "User has been deleted";
     }
-
 }
