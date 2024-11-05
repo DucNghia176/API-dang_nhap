@@ -4,7 +4,7 @@ public enum ErrorCode {
     UNCATEGORIZED(404, "Uncategorized error"),
     USER_EXISTED(200, "User existed"),
     USER_NOT_EXISTED(402, "User not exited"),
-    UNAUTH(402,"Unauthenticated")
+    UNAUTHENTIC(402,"Unauthenticated")
     ;
 
     ErrorCode(int code, String message) {

@@ -69,7 +69,7 @@ public class AuthService {
                 user.getPassword());
 
         if(!authenticated)
-            throw new AppException(ErrorCode.UNAUTH);
+            throw new AppException(ErrorCode.UNAUTHENTIC);
 
         var token = generateToken(user);
 
