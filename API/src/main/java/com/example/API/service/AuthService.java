@@ -106,6 +106,9 @@ public class AuthService {
         }
     }
 
+    public void chon(String a){
+        System.out.println("chan");
+    }
     public void logout(String token) {
         if (activeTokens.contains(token)) {
             blacklistedTokens.add(token);
