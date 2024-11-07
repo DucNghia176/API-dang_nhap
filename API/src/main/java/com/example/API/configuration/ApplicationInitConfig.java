@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
+import java.util.Set;
 
 
 @Configuration
@@ -30,7 +31,7 @@ public class ApplicationInitConfig {
     ApplicationRunner applicationRunner(UserRepository userRepository){
         return args -> {
             if (userRepository.findByUsername("admin").isEmpty()){
-                var roles = new HashSet<String>();
+                Set roles = new HashSet<String>();
                 roles.add(Role.ADMIN.name());
 
                 User user = User.builder()

@@ -2,6 +2,7 @@ package com.example.API.service;
 
 import com.example.API.dto.request.AuthRequest;
 import com.example.API.dto.request.IntrospectRequest;
+import com.example.API.dto.request.LogoutRequest;
 import com.example.API.dto.response.AuthResponse;
 import com.example.API.dto.response.IntrospectResponse;
 import com.example.API.entity.User;
@@ -26,10 +27,7 @@ import org.springframework.util.CollectionUtils;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -43,25 +41,27 @@ public class AuthService {
             "i79vwtl1y14gnrzivwklqemp7u82k02m";
 
     Set<String> blacklistedTokens = new HashSet<>();
+    Set<String> activeTokens = new HashSet<>();
     public IntrospectResponse introspect(IntrospectRequest request)
-                throws JOSEException, ParseException {
-            var token = request.getToken();
+            throws JOSEException, ParseException {
+        String token = request.getToken();
 
-            JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
-            SignedJWT signedJWT = SignedJWT.parse(token);
+        SignedJWT signedJWT = SignedJWT.parse(token);
 
-            Date expityTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
 
-            var verified = signedJWT.verify(verifier);
+        boolean verified = signedJWT.verify(verifier);
 
-            return  IntrospectResponse.builder()
-                    .valid(verified && expityTime.after(new Date()))
-                    .build();
+        return IntrospectResponse.builder()
+                .valid(verified && expiryTime.after(new Date()))
+                .build();
     }
 
+
     public AuthResponse authenticate(AuthRequest request){
-        var user = userRepository.findByUsername(request.getUsername())
+        User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
@@ -71,8 +71,8 @@ public class AuthService {
         if(!authenticated)
             throw new AppException(ErrorCode.UNAUTHENTIC);
 
-        var token = generateToken(user);
-
+        String  token = generateToken(user);
+        activeTokens.add(token);
         return AuthResponse.builder()
                 .token(token)
                 .authenticated(true)
@@ -89,7 +89,7 @@ public class AuthService {
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
-
+                .jwtID(UUID.randomUUID().toString())
                 .claim("scope",buildScope(user))
                 .build();
 
@@ -107,9 +107,15 @@ public class AuthService {
     }
 
     public void logout(String token) {
-        blacklistedTokens.add(token);
-        System.out.println("Token đã được đánh dấu là không hợp lệ: " + token);
+        if (activeTokens.contains(token)) {
+            blacklistedTokens.add(token);
+            activeTokens.remove(token);
+            System.out.println("Token đã được đánh dấu là không hợp lệ: " + token);
+        } else {
+            System.out.println("Token không hợp lệ hoặc đã được đăng xuất.");
+        }
     }
+
 
     public boolean isTokenBlacklisted(String token) {
         return blacklistedTokens.contains(token);
