@@ -105,6 +105,9 @@ public class AuthService {
             throw new RuntimeException(e);
         }
     }
+    void chon(String token){
+        System.out.println("hh");
+    }
     public void logout(String token) {
         if (activeTokens.contains(token)) {
             blacklistedTokens.add(token);
