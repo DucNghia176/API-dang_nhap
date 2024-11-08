@@ -18,7 +18,7 @@ import lombok.experimental.FieldDefaults;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String productID;   //id sp
+    Long productID;   //id sp
     String productName; //tên sp
     Float price;    //giá
     int stock;  //sl tồn kho
